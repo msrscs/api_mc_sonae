@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 08/10/2025                                      #
+# Data: 20/10/2025                                      #
 ######################################################### 
 
 from typing import List
@@ -32,11 +32,20 @@ router = APIRouter(
     dependencies=[Depends(auth.get_current_active_user)] # Protege todas as rotas deste router
 )
 
+@router.post("/", response_model=schemas.Usuario, status_code=status.HTTP_201_CREATED)
+def create_user(user: schemas.UsuarioCreate, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
+     if not crud.verifica_user(db, ["USR:ADMIN","USR:ESCRITA"], current_user):
+        raise HTTPException(status_code=403, detail="Acesso negado")
+     db_user = crud.get_user_by_email(db, email=user.email)
+     if db_user:
+         raise HTTPException(status_code=400, detail="E-mail já cadastrado")
+     return crud.create_user(db=db, user=user)
+
 @router.get("/", response_model=List[schemas.Usuario])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
+def read_users(skip: int = 0, limit: int = 1000, filtro: str = "", db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
     if not crud.verifica_user(db, ["USR:ADMIN","USR:ESCRITA","USR:LEITURA"], current_user):
         raise HTTPException(status_code=403, detail="Acesso negado")
-    users = crud.get_users(db, skip=skip, limit=limit)
+    users = crud.get_users(db, skip=skip, limit=limit, filtro=filtro)
     return users
 
 @router.get("/me", response_model=schemas.Usuario)
@@ -53,15 +62,6 @@ def read_user(user_id: int, db: Session = Depends(get_db), current_user: models.
     if db_user is None:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return db_user
-
-@router.post("/", response_model=schemas.Usuario, status_code=status.HTTP_201_CREATED)
-def create_user(user: schemas.UsuarioCreate, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
-     if not crud.verifica_user(db, ["USR:ADMIN","USR:ESCRITA"], current_user):
-        raise HTTPException(status_code=403, detail="Acesso negado")
-     db_user = crud.get_user_by_email(db, email=user.email)
-     if db_user:
-         raise HTTPException(status_code=400, detail="E-mail já cadastrado")
-     return crud.create_user(db=db, user=user)
 
 @router.put("/{user_id}", response_model=schemas.Usuario)
 def update_user(user_id: int, user: schemas.UsuarioUpdate, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):

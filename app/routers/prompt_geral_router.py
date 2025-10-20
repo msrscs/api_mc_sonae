@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 08/10/2025                                      #
+# Data: 20/10/2025                                      #
 ######################################################### 
 
 from typing import List
@@ -53,7 +53,7 @@ def read_prompt_geral(prompt_id: int, db: Session = Depends(get_db), current_use
     return db_prompt_geral
 
 @router.get("/", response_model=List[schemas.PromptGeral])
-def read_prompts_geral(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
+def read_prompts_geral(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
     if not crud.verifica_user(db, ["PRJ:ADMIN","PRJ:ESCRITA","PRJ:LEITURA"], current_user):
         raise HTTPException(status_code=403, detail="Acesso negado")
     prompt = crud.get_prompts_geral(db, skip=skip, limit=limit)

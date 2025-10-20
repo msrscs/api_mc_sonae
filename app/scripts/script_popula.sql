@@ -54,29 +54,31 @@ INSERT INTO p2.tb_permissoes
 VALUES(3, 6);
 
 -- Usuários
+-- CyberSeguranca@2025
+
 INSERT INTO p2.tb_usuarios
 (email, senha, nome, tipoid, status)
 VALUES('msrs@cesar.school', '$2b$12$OvvHOu3reWflGL/3vxIA7OU6f.k6ZqHctR.S/euFWY8W6eTTHdakm', 'Mauro Sérgio Rezende da Silva', 1, 'Ativo');
 
 INSERT INTO p2.tb_usuarios
 (email, senha, nome, tipoid, status)
-VALUES('atlc@cesar.school', 'Hash', 'Artur Torres Lima Cavalcanti', 1, 'Ativo');
+VALUES('atlc@cesar.school', '$2b$12$tnxKFOgRTPnEUtl2hN8/U.M3WYaF/mNo1xwf0t6OT1Qoxw4vT3nUa', 'Artur Torres Lima Cavalcanti', 1, 'Ativo');
 
 INSERT INTO p2.tb_usuarios
 (email, senha, nome, tipoid, status)
-VALUES('cvaf@cesar.school', 'Hash', 'Carlos Vinicius Alves de Figueiredo', 1, 'Ativo');
+VALUES('cvaf@cesar.school', '$2b$12$8y3Ws7teU/e/yFexBIeGdu4AtOFZCq82DFqxYoh7d1D8gyauDgWfy', 'Carlos Vinicius Alves de Figueiredo', 1, 'Ativo');
 
 INSERT INTO p2.tb_usuarios
 (email, senha, nome, tipoid, status)
-VALUES('ehffb@cesar.school', 'Hash', 'Eduardo Henrique Ferreira Fonseca Barbosa', 1, 'Ativo');
+VALUES('ehffb@cesar.school', '$2b$12$9uoC8wad7ziSVw/LMpybvejjzHRq6c9i34XmXkoRsIF9MvSME5AsO', 'Eduardo Henrique Ferreira Fonseca Barbosa', 1, 'Ativo');
 
 INSERT INTO p2.tb_usuarios
 (email, senha, nome, tipoid, status)
-VALUES('gma@cesar.school', 'Hash', 'Gabriel de Medeiros Almeida', 1, 'Ativo');
+VALUES('gma@cesar.school', '$2b$12$wV8YLZz9.LPHE1O6nDm1gezoQ.NlTgYP2Ehet0QiQQbhvkGXO1rsW', 'Gabriel de Medeiros Almeida', 1, 'Ativo');
 
 INSERT INTO p2.tb_usuarios
 (email, senha, nome, tipoid, status)
-VALUES('sbt@cesar.school', 'Hash', 'Silvio Barros Tenório', 1, 'Ativo');
+VALUES('sbt@cesar.school', '$2b$12$wLwcOJ.T991PdaMugl.ysOycfkgctj0BCI2Q2E1jpclj.94bEpz9S', 'Silvio Barros Tenório', 1, 'Ativo');
 
 -- Projetos
 INSERT INTO p2.tb_projetos

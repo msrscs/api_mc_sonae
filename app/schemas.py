@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 08/10/2025                                      #
+# Data: 20/10/2025                                      #
 ######################################################### 
 
 from pydantic import BaseModel, EmailStr, ConfigDict
@@ -125,6 +125,7 @@ class Projeto(ProjetoBase):
 #########################################################
 class RepositorioBase(BaseModel):
     markdown: Optional[str] = None
+    tipoarquivo: str
     projetoid: int
     usuarioid: int
     datahora: datetime

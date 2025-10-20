@@ -27,6 +27,7 @@ CREATE TABLE p2.tb_repositorio_pj (
         repositorioid int GENERATED ALWAYS AS IDENTITY NOT NULL,
         projetoid int NOT NULL,
         usuarioid int NOT NULL,
+        tipoarquivo varchar(5) NOT NULL,
         markdown text NULL,
         datahora timestamptz NOT NULL,
         CONSTRAINT tb_repositorio_pkey PRIMARY KEY (repositorioid)

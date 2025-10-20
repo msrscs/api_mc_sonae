@@ -67,19 +67,25 @@
           pip install python-dotenv
             
 # Arquivos Python
-    - main.py       => Arquivo main da Api MC Sonae 
-    - auth.py       => Autenticação JWT
-    - crud.py       => Crud do Banco de Dados
-    - database.py   => Conexão do Banco de Dados
-    - models.py     => Modelos das Classes
-    - schemas.py    => Esquemas Pydantic
+    - main.py                   => Arquivo main da Api MC Sonae 
+    - auth.py                   => Autenticação JWT
+    - crud.py                   => Crud do Banco de Dados
+    - database.py               => Conexão do Banco de Dados
+    - models.py                 => Modelos das Classes
+    - schemas.py                => Esquemas Pydantic
+    - auth_router.py            => Rota de Autenticação
+    - permissao_router.py       => Rota de Permissão
+    - politica_router.py        => Rota de Política
+    - projetos_router.py        => Rota de Projetos
+    - prompt_geral_router.py    => Rota de Prompt Geral
+    - prompt_usuario_router.py  => Rota de Prompt Usuário
+    - repositorio_router.py     => Rota de Repositório
+    - tipo_router.py            => Rota de Tipo
+    - usuarios_router.py        => Rota de Usuários
+
+# Arquivos de Script Banco de Dados
+    - script_bd_mcsonae.sql     => Criação do Banco de Dados bd_mcsonae
+    - script_popula.sql         => População Inicial do Banco de Dados
 
 # Executar API
     uvicorn app.main:app --reload
-
-
-
-
-
-
-

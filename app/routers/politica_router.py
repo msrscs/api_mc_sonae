@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 08/10/2025                                      #
+# Data: 20/10/2025                                      #
 ######################################################### 
 
 from typing import List
@@ -53,7 +53,7 @@ def read_politica(politica_id: int, db: Session = Depends(get_db), current_user:
     return db_politica
 
 @router.get("/", response_model=List[schemas.Politica])
-def read_politicas(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
+def read_politicas(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
     if not crud.verifica_user(db, ["USR:ADMIN","USR:ESCRITA","USR:LEITURA"], current_user):
         raise HTTPException(status_code=403, detail="Acesso negado")
     politica = crud.get_politicas(db, skip=skip, limit=limit)

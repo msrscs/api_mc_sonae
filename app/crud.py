@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 04/10/2025                                      #
+# Data: 20/10/2025                                      #
 ######################################################### 
 
 from typing import List
@@ -29,13 +29,15 @@ from . import models, schemas, auth
 # --- CRUD Usuários ---
 #########################################################
 def get_user(db: Session, user_id: int):
-    return db.query(models.Usuario).filter(models.Usuario.usuarioid == user_id).first()
+    return db.query(models.Usuario).options(selectinload(models.Usuario.tipou)).filter(models.Usuario.usuarioid == user_id).first()  # type: ignore
 
 def get_user_by_email(db: Session, email: str):
-    return db.query(models.Usuario).filter(models.Usuario.email == email).first()
+    return db.query(models.Usuario).options(selectinload(models.Usuario.tipou)).filter(models.Usuario.email == email).first()  # type: ignore
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Usuario).offset(skip).limit(limit).all()
+def get_users(db: Session, skip: int = 0, limit: int = 1000, filtro: str = ""):
+    if filtro:
+        return db.query(models.Usuario).options(selectinload(models.Usuario.tipou)).filter(models.Usuario.nome.ilike(f"%{filtro}%")).order_by(models.Usuario.nome).offset(skip).limit(limit).all() # type: ignore
+    return db.query(models.Usuario).options(selectinload(models.Usuario.tipou)).order_by(models.Usuario.nome).offset(skip).limit(limit).all() # type: ignore
 
 def create_user(db: Session, user: schemas.UsuarioCreate):
     hashed_password = auth.get_password_hash(user.senha)
@@ -88,13 +90,13 @@ def reset_user(db: Session, user_id: int):
     return db_user, gsenha
 
 def verifica_user(db: Session, modulo_permissao: List[str], current_user):
-    print (f"####################################################################")  # Debugging line
-    print (f"Verificando permissões para o usuário: {current_user.email} {current_user.usuarioid}")  # Debugging line
+    print (f"####################################################################")
+    print (f"Verificando permissões para o usuário: {current_user.email} {current_user.usuarioid}")
     user_tipoid = current_user.tipoid  # type: ignore
-    print (f"Tipo ID do usuário atual: {user_tipoid}")  # Debugging line
-    db_permissao = db.query(models.Permissao).options(selectinload(models.Permissao.politica), selectinload(models.Permissao.tipo)).filter(models.Permissao.tipoid == user_tipoid).all()
-    print (f"Permissões do usuário: {[permissao.politica.permissao for permissao in db_permissao]}")  # Debugging line
-    print (f"####################################################################")  # Debugging line
+    print (f"Tipo ID do usuário atual: {user_tipoid}")
+    db_permissao = db.query(models.Permissao).options(selectinload(models.Permissao.politica), selectinload(models.Permissao.tipo)).filter(models.Permissao._tipoid == user_tipoid).all()
+    print (f"Permissões do usuário: {[permissao.politica.permissao for permissao in db_permissao]}")
+    print (f"####################################################################")
     for permissao in db_permissao:  
         if permissao.politica.permissao in modulo_permissao:
              return True
@@ -104,10 +106,10 @@ def verifica_user(db: Session, modulo_permissao: List[str], current_user):
 # --- CRUD Projetos ---
 #########################################################
 def get_projeto(db: Session, projeto_id: int):
-    return db.query(models.Projeto).filter(models.Projeto.projetoid == projeto_id).first()
+    return db.query(models.Projeto).filter(models.Projeto.projetoid == projeto_id).first() # type: ignore
 
-def get_projetos(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Projeto).offset(skip).limit(limit).all()
+def get_projetos(db: Session, skip: int = 0, limit: int = 1000):
+    return db.query(models.Projeto).order_by(models.Projeto.projeto).offset(skip).limit(limit).all() # type: ignore
 
 def create_projeto(db: Session, projeto: schemas.ProjetoCreate):
     db_projeto = models.Projeto(**projeto.dict())
@@ -136,10 +138,11 @@ def delete_projeto(db: Session, projeto_id: int):
 # --- CRUD Repositório ---
 #########################################################
 def get_repositorio(db: Session, repositorio_id: int):
-    return db.query(models.Repositorio).options(selectinload(models.Repositorio.projeto), selectinload(models.Repositorio.usuario)).filter(models.Repositorio.repositorioid == repositorio_id).first()
+    return db.query(models.Repositorio).options(selectinload(models.Repositorio.projeto), selectinload(models.Repositorio.usuario)).filter(models.Repositorio.repositorioid == repositorio_id).first() # type: ignore
 
-def get_repositorios(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Repositorio).options(selectinload(models.Repositorio.projeto), selectinload(models.Repositorio.usuario)).offset(skip).limit(limit).all()
+
+def get_repositorios(db: Session, skip: int = 0, limit: int = 1000):
+    return db.query(models.Repositorio).options(selectinload(models.Repositorio.projeto), selectinload(models.Repositorio.usuario)).order_by(models.Repositorio.datahora.desc()).offset(skip).limit(limit).all() # type: ignore
 
 def create_repositorio(db: Session, repositorio: schemas.RepositorioCreate, user_id: int):
     data = repositorio.dict()
@@ -155,6 +158,7 @@ def update_repositorio(db: Session, repositorio_id: int, repositorio: schemas.Re
     if db_repositorio:
         db_repositorio.projetoid = repositorio.projetoid # type: ignore
         db_repositorio.usuarioid = user_id # type: ignore
+        db_repositorio.tipoarquivo = repositorio.tipoarquivo # type: ignore
         db_repositorio.markdown = repositorio.markdown # type: ignore
         db_repositorio.datahora = repositorio.datahora # type: ignore
         db.commit()
@@ -173,10 +177,10 @@ def delete_repositorio(db: Session, repositorio_id: int):
 # --- CRUD Prompt Geral ---
 #########################################################
 def get_prompt_geral(db: Session, prompt_id: int):
-    return db.query(models.PromptGeral).options(selectinload(models.PromptGeral.usuario)).filter(models.PromptGeral.promptid == prompt_id).first()
+    return db.query(models.PromptGeral).options(selectinload(models.PromptGeral.usuario)).filter(models.PromptGeral.promptid == prompt_id).first() # type: ignore
 
-def get_prompts_geral(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.PromptGeral).options(selectinload(models.PromptGeral.usuario)).offset(skip).limit(limit).all()
+def get_prompts_geral(db: Session, skip: int = 0, limit: int = 1000):
+    return db.query(models.PromptGeral).options(selectinload(models.PromptGeral.usuario)).order_by(models.PromptGeral.datahora.desc()).offset(skip).limit(limit).all() # type: ignore
 
 def create_prompt_geral(db: Session, prompt: schemas.PromptGeralCreate, user_id: int):
     data = prompt.dict()
@@ -208,10 +212,10 @@ def delete_prompt_geral(db: Session, prompt_id: int):
 # --- CRUD Prompt Usuário ---
 #########################################################
 def get_prompt_usuario(db: Session, prompt_id: int):
-    return db.query(models.PromptUsuario).options(selectinload(models.PromptUsuario.usuario)).filter(models.PromptUsuario.promptid == prompt_id).first()
+    return db.query(models.PromptUsuario).options(selectinload(models.PromptUsuario.usuario)).filter(models.PromptUsuario.promptid == prompt_id).first() # type: ignore
 
-def get_prompts_usuario(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.PromptUsuario).options(selectinload(models.PromptUsuario.usuario)).offset(skip).limit(limit).all()
+def get_prompts_usuario(db: Session, skip: int = 0, limit: int = 1000):
+    return db.query(models.PromptUsuario).options(selectinload(models.PromptUsuario.usuario)).order_by(models.PromptUsuario.datahora.desc()).offset(skip).limit(limit).all() # type: ignore
 
 def create_prompt_usuario(db: Session, prompt: schemas.PromptUsuarioCreate, user_id: int):
     data = prompt.dict()
@@ -243,10 +247,10 @@ def delete_prompt_usuario(db: Session, prompt_id: int):
 # --- CRUD Politica ---
 #########################################################
 def get_politica(db: Session, politica_id: int):
-    return db.query(models.Politica).filter(models.Politica.politicaid == politica_id).first()
+    return db.query(models.Politica).filter(models.Politica.politicaid == politica_id).first() # type: ignore
 
-def get_politicas(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Politica).offset(skip).limit(limit).all()
+def get_politicas(db: Session, skip: int = 0, limit: int = 1000):
+    return db.query(models.Politica).order_by(models.Politica.permissao).offset(skip).limit(limit).all() # type: ignore
 
 def create_politica(db: Session, politica: schemas.PoliticaCreate):
     db_politica = models.Politica(**politica.dict())
@@ -275,10 +279,10 @@ def delete_politica(db: Session, politica_id: int):
 # --- CRUD Tipo ---
 #########################################################
 def get_tipo(db: Session, tipo_id: int):
-    return db.query(models.Tipo).options(selectinload(models.Tipo.permissoes)).filter(models.Tipo.tipoid == tipo_id).first()
+    return db.query(models.Tipo).options(selectinload(models.Tipo.permissoes)).filter(models.Tipo.tipoid == tipo_id).first() # type: ignore
 
-def get_tipos(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Tipo).options(selectinload(models.Tipo.permissoes)).offset(skip).limit(limit).all()
+def get_tipos(db: Session, skip: int = 0, limit: int = 1000):
+    return db.query(models.Tipo).options(selectinload(models.Tipo.permissoes)).order_by(models.Tipo.tipo).offset(skip).limit(limit).all() # type: ignore
 
 def create_tipo(db: Session, tipo: schemas.TipoCreate):
     db_tipo = models.Tipo(**tipo.dict())
@@ -306,10 +310,10 @@ def delete_tipo(db: Session, tipo_id: int):
 # --- CRUD Permissão ---
 #########################################################
 def get_permissao(db: Session, permissao_id: int):
-    return db.query(models.Permissao).options(selectinload(models.Permissao.politica), selectinload(models.Permissao.tipo)).filter(models.Permissao.permissaoid == permissao_id).first()
+    return db.query(models.Permissao).options(selectinload(models.Permissao.politica), selectinload(models.Permissao.tipo)).filter(models.Permissao.permissaoid == permissao_id).first() # type: ignore
 
-def get_permissoes(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Permissao).options(selectinload(models.Permissao.politica), selectinload(models.Permissao.tipo)).offset(skip).limit(limit).all()
+def get_permissoes(db: Session, skip: int = 0, limit: int = 1000):
+    return db.query(models.Permissao).options(selectinload(models.Permissao.politica), selectinload(models.Permissao.tipo)).order_by(models.Permissao.tipoid).offset(skip).limit(limit).all() # type: ignore
 
 def create_permissao(db: Session, permissao: schemas.PermissaoCreate):
     db_permissao = models.Permissao(**permissao.dict())

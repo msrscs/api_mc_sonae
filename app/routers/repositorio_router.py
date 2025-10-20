@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 08/10/2025                                      #
+# Data: 20/10/2025                                      #
 ######################################################### 
 
 import re
@@ -40,7 +40,7 @@ def create_repositorio(repositorio: schemas.RepositorioCreate, db: Session = Dep
     return crud.create_repositorio(db=db, repositorio=repositorio, user_id=current_user.usuarioid) # type: ignore
 
 @router.get("/", response_model=List[schemas.Repositorio])
-def read_repositorios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
+def read_repositorios(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
     if not crud.verifica_user(db, ["PRJ:ADMIN","PRJ:ESCRITA","PRJ:LEITURA"], current_user):
         raise HTTPException(status_code=403, detail="Acesso negado")
     repositorio = crud.get_repositorios(db, skip=skip, limit=limit)
