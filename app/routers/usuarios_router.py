@@ -50,8 +50,8 @@ def read_users(skip: int = 0, limit: int = 1000, filtro: str = "", db: Session =
 
 @router.get("/me", response_model=schemas.Usuario)
 async def read_users_me(db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
-    if not crud.verifica_user(db, ["USR:ADMIN","USR:ESCRITA","USR:LEITURA"], current_user):
-        raise HTTPException(status_code=403, detail="Acesso negado")
+    # if not crud.verifica_user(db, ["USR:ADMIN","USR:ESCRITA","USR:LEITURA"], current_user):
+    #     raise HTTPException(status_code=403, detail="Acesso negado")
     return current_user
 
 @router.get("/{user_id}", response_model=schemas.Usuario)
