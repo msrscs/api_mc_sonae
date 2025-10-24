@@ -42,7 +42,7 @@ def create_projeto(projeto: schemas.ProjetoCreate, db: Session = Depends(get_db)
 def read_projetos(skip: int = 0, limit: int = 1000, filtro: str = "", db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
     if not crud.verifica_user(db, ["PRJ:ADMIN","PRJ:ESCRITA","PRJ:LEITURA"], current_user):
         raise HTTPException(status_code=403, detail="Acesso negado")
-    projetos = crud.get_projetos(db, skip=skip, limit=limit)
+    projetos = crud.get_projetos(db, skip=skip, limit=limit, filtro=filtro)
     return projetos
 
 @router.get("/{projeto_id}", response_model=schemas.Projeto)
