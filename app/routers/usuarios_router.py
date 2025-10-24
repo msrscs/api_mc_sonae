@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 20/10/2025                                      #
+# Data: 24/10/2025                                      #
 ######################################################### 
 
 from typing import List
@@ -50,8 +50,8 @@ def read_users(skip: int = 0, limit: int = 1000, filtro: str = "", db: Session =
 
 @router.get("/me", response_model=schemas.Usuario)
 async def read_users_me(db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
-    # if not crud.verifica_user(db, ["USR:ADMIN","USR:ESCRITA","USR:LEITURA"], current_user):
-    #     raise HTTPException(status_code=403, detail="Acesso negado")
+    if not crud.verifica_user(db, ["USR:ADMIN","USR:ESCRITA","USR:LEITURA","PRJ:ADMIN","PRJ:ESCRITA","PRJ:LEITURA"], current_user):
+        raise HTTPException(status_code=403, detail="Acesso negado")
     return current_user
 
 @router.get("/{user_id}", response_model=schemas.Usuario)
@@ -83,7 +83,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db), current_user: model
 
 @router.put("/change_password/{user_id}", response_model=schemas.Usuario)
 def change_password_user(user_id: int, user: schemas.UsuarioCreate, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
-    if not crud.verifica_user(db, ["USR:ADMIN","USR:ESCRITA","USR:LEITURA"], current_user):
+    if not crud.verifica_user(db, ["USR:ADMIN","USR:ESCRITA","USR:LEITURA","PRJ:ADMIN","PRJ:ESCRITA","PRJ:LEITURA"], current_user):
         raise HTTPException(status_code=403, detail="Acesso negado")
     db_user = crud.change_password_user(db, user_id=current_user.usuarioid, user=user) # type: ignore
     if db_user is None:
