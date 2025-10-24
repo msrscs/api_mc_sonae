@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 20/10/2025                                      #
+# Data: 24/10/2025                                      #
 ######################################################### 
 
 from typing import List
@@ -108,7 +108,9 @@ def verifica_user(db: Session, modulo_permissao: List[str], current_user):
 def get_projeto(db: Session, projeto_id: int):
     return db.query(models.Projeto).filter(models.Projeto.projetoid == projeto_id).first() # type: ignore
 
-def get_projetos(db: Session, skip: int = 0, limit: int = 1000):
+def get_projetos(db: Session, skip: int = 0, limit: int = 1000, filtro: str = ""):
+    if filtro:
+        return db.query(models.Projeto).filter(models.Projeto.projeto.ilike(f"%{filtro}%")).order_by(models.Projeto.projeto).offset(skip).limit(limit).all() # type: ignore
     return db.query(models.Projeto).order_by(models.Projeto.projeto).offset(skip).limit(limit).all() # type: ignore
 
 def create_projeto(db: Session, projeto: schemas.ProjetoCreate):

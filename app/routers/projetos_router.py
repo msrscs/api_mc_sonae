@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 20/10/2025                                      #
+# Data: 24/10/2025                                      #
 ######################################################### 
 
 from typing import List
@@ -39,7 +39,7 @@ def create_projeto(projeto: schemas.ProjetoCreate, db: Session = Depends(get_db)
     return crud.create_projeto(db=db, projeto=projeto)
 
 @router.get("/", response_model=List[schemas.Projeto])
-def read_projetos(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
+def read_projetos(skip: int = 0, limit: int = 1000, filtro: str = "", db: Session = Depends(get_db), current_user: models.Usuario = Depends(auth.get_current_active_user)):
     if not crud.verifica_user(db, ["PRJ:ADMIN","PRJ:ESCRITA","PRJ:LEITURA"], current_user):
         raise HTTPException(status_code=403, detail="Acesso negado")
     projetos = crud.get_projetos(db, skip=skip, limit=limit)
