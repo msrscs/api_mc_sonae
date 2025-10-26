@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 24/10/2025                                      #
+# Data: 26/10/2025                                      #
 ######################################################### 
 
 from typing import List
@@ -90,13 +90,13 @@ def reset_user(db: Session, user_id: int):
     return db_user, gsenha
 
 def verifica_user(db: Session, modulo_permissao: List[str], current_user):
-    print (f"####################################################################")
-    print (f"Verificando permissões para o usuário: {current_user.email} {current_user.usuarioid}")
+    # print (f"####################################################################")
+    # print (f"Verificando permissões para o usuário: {current_user.email} {current_user.usuarioid}")
     user_tipoid = current_user.tipoid  # type: ignore
-    print (f"Tipo ID do usuário atual: {user_tipoid}")
+    # print (f"Tipo ID do usuário atual: {user_tipoid}")
     db_permissao = db.query(models.Permissao).options(selectinload(models.Permissao.politica), selectinload(models.Permissao.tipo)).filter(models.Permissao._tipoid == user_tipoid).all()
-    print (f"Permissões do usuário: {[permissao.politica.permissao for permissao in db_permissao]}")
-    print (f"####################################################################")
+    # print (f"Permissões do usuário: {[permissao.politica.permissao for permissao in db_permissao]}")
+    # print (f"####################################################################")
     for permissao in db_permissao:  
         if permissao.politica.permissao in modulo_permissao:
              return True

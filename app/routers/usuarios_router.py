@@ -17,7 +17,7 @@
 #           Mauro Sérgio Rezende da Silva               #
 #           Silvio Barros Tenório                       #
 # Versão: 1.0                                           #
-# Data: 24/10/2025                                      #
+# Data: 26/10/2025                                      #
 ######################################################### 
 
 from typing import List
@@ -106,5 +106,5 @@ def reset_user(user_id: int, db: Session = Depends(get_db), current_user: models
         "status": db_user.status,
         "senha_gerada": gsenha
     }
-    print("Senha Gerada: ", gsenha)
+    # print("Senha Gerada: ", gsenha)
     return response_data
